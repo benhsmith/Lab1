@@ -1,11 +1,11 @@
-use urlencoding::encode;
+//use urlencoding::encode;
 
-use curl::easy::{Easy2, Handler, WriteError};
-use curl::multi::{Easy2Handle, Multi};
-use std::collections::HashMap;
-use std::time::Duration;
+use curl::easy::{Handler, WriteError};
+//use curl::multi::{Easy2Handle, Multi};
+//use std::collections::HashMap;
+//use std::time::Duration;
 use std::str;
-use std::sync::atomic::{AtomicI32, Ordering};
+use std::sync::atomic::{AtomicI32};
 
 use crate::Packages;
 
