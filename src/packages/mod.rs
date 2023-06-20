@@ -118,13 +118,24 @@ impl Packages {
     }
 
     fn dep2str(&self, dep: &Dependency) -> String {
-        return dep.iter().map(|d| {
+        return dep.iter().map(|d| { self.rel2str(d) }
+
+            /* 
             let pn = self.get_package_name(d.package_num);
             match &d.rel_version {
                 None => String::from(pn),
                 Some((rel, ver)) => format!("{} ({} {})", pn, rel.to_string(), ver)
             }
-        }).format(" | ").to_string();
+            
+        }*/).format(" | ").to_string();
+    }
+
+    fn rel2str(&self, rel: &RelVersionedPackageNum) -> String {
+        let pn = self.get_package_name(rel.package_num);
+        match &rel.rel_version {
+            None => String::from(pn),
+            Some((rel, ver)) => format!("{} ({} {})", pn, rel.to_string(), ver)
+        }
     }
 
     // output commands

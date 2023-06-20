@@ -10,9 +10,20 @@ impl Packages {
             return;
         }
         println!("Package {}:", package_name);
-        println!("- dependency {:?}", "dep");
-        println!("+ {} satisfied by installed version {}", "dep", "459");
-        // some sort of for loop...
+
+        let package_num = self.get_package_num(package_name);
+        let package_deps = self.dependencies.get(package_num).unwrap();
+
+        for package_dep in package_deps {
+            let package_ver = package_dep.first().unwrap();
+            println!("{}", self.rel2str(package_ver));
+            if let Some(debver) = self.installed_debvers.get(&package_ver.package_num) {
+                println!("+ {} satisfied by installed version {}", self.get_package_name(package_ver.package_num), debver);
+                // some sort of for loop...
+            } else {
+                println!("-> not satisfied");
+            }
+        }
     }
 
     /// Returns Some(package) which satisfies dependency dd, or None if not satisfied.
