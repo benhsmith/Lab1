@@ -29,6 +29,14 @@ impl Packages {
     /// Returns Some(package) which satisfies dependency dd, or None if not satisfied.
     pub fn dep_is_satisfied(&self, dd:&Dependency) -> Option<&str> {
         // presumably you should loop on dd
+        for relver_package in dd {
+            let debver = self.installed_debvers.get(&relver_package.package_num);
+            if debver.is_some() {
+                if debver.unwrap() >= relver_package.rel_version {
+                    return Some(self.get_package_name(relver_package.package_num));
+                }
+            }
+        }
         return None;
     }
 

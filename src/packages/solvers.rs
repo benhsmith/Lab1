@@ -11,10 +11,28 @@ impl Packages {
             return vec![];
         }
 
-        let deps : &Vec<Dependency> = &*self.dependencies.get(self.get_package_num(package_name)).unwrap();
+        let mut deps : &Vec<Dependency> = &*self.dependencies.get(self.get_package_num(package_name)).unwrap();
         let mut dependency_set = vec![];
+        let mut dep_index = 0;
 
         // implement worklist
+        loop {
+            for dep in deps {
+                if !dependency_set.contains(&dep[0].package_num) {
+                    dependency_set.push(dep[0].package_num);
+                }
+            }
+
+            println!("dep_index: {}, dependency_set.len() {}", dep_index, dependency_set.len());
+
+            if dep_index >= dependency_set.len() {
+                break;
+            }
+
+            deps = self.dependencies.get(&dependency_set[dep_index]).unwrap();
+
+            dep_index += 1;
+        }
 
         return dependency_set;
     }

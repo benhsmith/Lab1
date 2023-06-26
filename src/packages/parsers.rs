@@ -107,69 +107,37 @@ impl Packages {
         let rel_package_strs = value.split(",");
 
         for rel_package_str in rel_package_strs {
-            let caps = version_captures(rel_package_str).unwrap();
-            let package_num = self.get_package_num_inserting(caps.name("pkg").unwrap().as_str());
-            
-            let op = caps.name("op"); //.unwrap().as_str()           
+            let mut relver_packages = Dependency::new();
+
+            for rel_package in rel_package_str.split("|") {
+                let caps = version_captures(rel_package).unwrap();
+                let package_num = self.get_package_num_inserting(caps.name("pkg").unwrap().as_str());
+        
+                let op = caps.name("op");         
+                
+                let rel_version = match op {
+                    Some(op) => {
+                        let ver = caps.name("ver"); //.unwrap().as_str()
+                        Some((op.as_str().parse::<debversion::VersionRelation>().unwrap(), 
+                            ver.unwrap().as_str().to_string()))
+                    },
+                    None => None 
+                };
+                relver_packages.push(
+                    RelVersionedPackageNum{
+                        package_num, 
+                        rel_version : rel_version
+                    }
+                );
+            }
 
             let mut package_deps = self.dependencies.get_mut(&current_package_num);
-            
             if package_deps.is_none() {
                 self.dependencies.insert(current_package_num, Vec::new());
                 package_deps = self.dependencies.get_mut(&current_package_num);
-                // So we can assume there is always a Vec<RelVersionedPackageNum>
-                //package_deps.unwrap().push(Dependency::new());
             }
-
-            let rel_version = match op {
-                Some(op) => {
-                    let ver = caps.name("ver"); //.unwrap().as_str()
-                    Some((op.as_str().parse::<debversion::VersionRelation>().unwrap(), 
-                        ver.unwrap().as_str().to_string()))
-                },
-                None => None 
-            };
-
-            package_deps.unwrap().push(vec![
-                RelVersionedPackageNum{
-                    package_num, 
-                    rel_version : rel_version
-                }
-            ]);
-/* 
-            // Check last package in Vec<Dependency>
-            let mut last_dep_package = package_deps.unwrap().last();
-
-            if last_dep_package.is_none() {
-            } else {
-                // Check last rel_version
-                if let Some(last_rel_version) = last_dep_package.unwrap().last() {
-                    if last_rel_version.package_num == package_num {
-                        last_dep_package.unwrap().push(
-                            RelVersionedPackageNum{
-                                package_num, 
-                                rel_version : Some((op.parse::<debversion::VersionRelation>().unwrap(), ver.to_string()))
-                            }    
-                        )
-                    } else {
-                        // Different package so start a new list
-                        // Package does not match so start a new Vec
-                        package_deps.unwrap().push(Vec::new());
-                        package_deps.unwrap().last().unwrap().push(
-                            RelVersionedPackageNum{
-                                package_num, 
-                                rel_version : Some((op.parse::<debversion::VersionRelation>().unwrap(), ver.to_string()))
-                            }
-                        );
-                    }
-                }
-            } else {
-                package_deps.unwrap().push
-            }
-
-            package_deps.unwrap().push(
-            );
-*/
+    
+            package_deps.unwrap().push(relver_packages);
         }
     }
 }

@@ -119,7 +119,6 @@ impl Packages {
 
     fn dep2str(&self, dep: &Dependency) -> String {
         return dep.iter().map(|d| { self.rel2str(d) }
-
             /* 
             let pn = self.get_package_name(d.package_num);
             match &d.rel_version {
